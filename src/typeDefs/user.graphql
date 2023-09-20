@@ -1,0 +1,57 @@
+enum UserRole {
+  ADMIN
+  AUTHOR
+}
+
+enum AuthorStatus {
+  PENDING
+  VERIFIED
+}
+
+type User {
+  id: ID!
+  name: String
+  mobile: String!
+  email: String!
+  password: String
+  role: UserRole!
+  authorStatus: AuthorStatus
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Tokens {
+  accessToken: String!
+  refreshToken: String!
+}
+
+enum RegisterUserRole {
+  USER
+  AUTHOR
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+  confirmPassword: String!
+  mobile: String!
+  name: String
+}
+
+input LoginInput {
+  emailOrMobile: String!
+  password: String!
+}
+
+type Query {
+  token(refreshToken: String): String!
+  user(id: ID!): User!
+}
+
+type Mutation {
+  register(data: RegisterInput): ID!
+  resendActivation(id: ID!): ID!
+  verifyUser(id: ID!, code: String!): ID!
+  login(data: LoginInput): String!
+  logout: ID!
+}
