@@ -24,9 +24,6 @@ export const Mutation = {
     if (user === null) {
       return new AuthenticationError();
     }
-
-   
-
     return await postCreationService(prisma, data);
   },
 
@@ -39,10 +36,6 @@ export const Mutation = {
     if (user === null) {
       return new AuthenticationError();
     }
-
-   
-    console.log("yahas");
-
     return await postModificationService(prisma, data);
   },
 
@@ -55,9 +48,6 @@ export const Mutation = {
     if (user === null) {
       return new AuthenticationError();
     }
-
-   
-
     return await postDeletionService(prisma, id);
   },
 };

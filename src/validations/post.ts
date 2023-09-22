@@ -8,7 +8,7 @@ import {
 
 } from "@/utils/constants";
 
-import { cursorParamsSchema, idParamsSchema, offsetParamsSchema } from ".";
+
 
 export const createPostSchema = yup.object({
   title: yup.string().required(generateRequiredErrorMessage("Title")),
@@ -25,15 +25,4 @@ export const updatePostSchema = yup.object({
  
 });
 
-export const postsByTagSchema = offsetParamsSchema.shape({
-  // role: yup
-  //   .string()
-  //   .required(generateRequiredErrorMessage("Role"))
-  //   .oneOf<UserRole>(
-  //     ["ADMIN", "AUTHOR"],
-  //     generateEitherErrorMessage("Role", "AUTHOR", "ADMIN"),
-  //   ),
-  tag: yup.string().required(generateRequiredErrorMessage("Tag")),
-});
 
-export const postReactedBySchema = idParamsSchema.concat(cursorParamsSchema);

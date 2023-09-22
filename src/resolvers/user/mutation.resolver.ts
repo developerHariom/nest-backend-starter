@@ -2,26 +2,17 @@ import { type GraphQLResolveInfo } from "graphql";
 
 import { AuthenticationError } from "@/model";
 import {
- 
   loginService,
   logoutService,
   resendActivationService,
-  
   userRegistrationService,
- 
   verifyUserService,
 } from "@/services/user";
-import config from "@/utils/config";
-import {
-  
-  UN_AUTH_ERR_MSG,
-  
-} from "@/utils/constants";
+import { UN_AUTH_ERR_MSG } from "@/utils/constants";
 import type {
   IDParams,
   LoginInput,
   RegisterInput,
- 
   VerifyUserParams,
   YogaContext,
 } from "@/utils/types";
@@ -30,27 +21,20 @@ export const Mutation = {
   async register(
     _: unknown,
     { data }: { data: RegisterInput },
-    { prisma, req }: YogaContext,
+    { prisma }: YogaContext,
     __: GraphQLResolveInfo,
   ) {
-    return await userRegistrationService(
-      prisma,
-      data,
-      req.headers.origin || config.CLIENT_ENDPOINT,
-    );
+    console.log(data);
+    return await userRegistrationService(prisma, data);
   },
 
   async resendActivation(
     _: unknown,
     params: IDParams,
-    { prisma, req }: YogaContext,
+    { prisma }: YogaContext,
     __: GraphQLResolveInfo,
   ) {
-    const result = await resendActivationService(
-      prisma,
-      params,
-      req.headers.origin || config.CLIENT_ENDPOINT,
-    );
+    const result = await resendActivationService(prisma, params);
     return result;
   },
 
@@ -92,5 +76,4 @@ export const Mutation = {
     }
     return await logoutService(user, req, res);
   },
-
-}
+};

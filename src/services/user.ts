@@ -44,8 +44,6 @@ import {
   verifyUserSchema,
 } from "@/validations/user";
 
-import { sendVerificationCodeService } from "./mail";
-
 async function generateTokensService(user: UserWithAvatar) {
   const accessToken = await generateToken(
     user,
@@ -89,7 +87,6 @@ const verifyRefreshToken = async (token: string) => {
 export async function userRegistrationService(
   prisma: PrismaClient,
   params: RegisterInput,
-  host: string,
 ) {
   try {
     await registerSchema.validate(params, {
@@ -102,14 +99,15 @@ export async function userRegistrationService(
 
   try {
     const { email, password, mobile, name } = params;
+    console.log(params)
     const isUserExist = await getUserByEmailOrMobile(prisma, email, mobile);
 
     if (isUserExist) {
-      await sendVerificationCodeService(
-        isUserExist.id,
-        isUserExist.email,
-        host,
-      );
+      // await sendVerificationCodeService(
+      //   isUserExist.id,
+      //   isUserExist.email,
+      //   host,
+      // );
       return isUserExist.id;
     }
 
@@ -122,7 +120,7 @@ export async function userRegistrationService(
       password: hashPassword,
     });
 
-    await sendVerificationCodeService(user.id, email, host);
+    // await sendVerificationCodeService(user.id, email, host);
 
     return user.id;
   } catch (error) {
@@ -134,7 +132,7 @@ export async function userRegistrationService(
 export async function resendActivationService(
   prisma: PrismaClient,
   params: IDParams,
-  host: string,
+ 
 ) {
   try {
     await idParamsSchema.validate(params, {
@@ -152,13 +150,11 @@ export async function resendActivationService(
       return new ForbiddenError(generateNotExistErrorMessage("User"));
     }
 
-    const { authorStatus, email, id } = user;
+    const { authorStatus, id } = user;
 
     if (authorStatus === "VERIFIED") {
       return new ForbiddenError("User already verified");
     }
-
-    await sendVerificationCodeService(id, email, host);
 
     return id;
   } catch (error) {
@@ -260,11 +256,7 @@ export async function loginService(
   }
 }
 
-export async function logoutService(
-  user: User,
-  req: Request,
-  res: Response,
-) {
+export async function logoutService(user: User, req: Request, res: Response) {
   try {
     const jwt = req.cookies?.jwt;
     if (!jwt) {
@@ -286,9 +278,7 @@ export async function tokenService(
   refreshToken?: string,
 ) {
   try {
-
-    console.log(refreshToken,"yo refresh")
-   
+  
 
     if (!refreshToken) {
       return new AuthenticationError(UN_AUTH_ERR_MSG);

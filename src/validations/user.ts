@@ -11,7 +11,7 @@ import {
   generateRequiredErrorMessage,
 } from "@/utils/constants";
 
-import { cursorParamsSchema, idParamsSchema } from ".";
+import {  idParamsSchema } from ".";
 
 export const userEmailMobileSchema = yup.object({
   email: yup
@@ -65,25 +65,4 @@ export const loginSchema = yup.object({
   password: yup.string().required(generateRequiredErrorMessage("password")),
 });
 
-export const resetPasswordSchema = yup.object({
-  oldPassword: yup
-    .string()
-    .required(generateRequiredErrorMessage("Old password")),
-  newPassword: yup
-    .string()
-    .required(generateRequiredErrorMessage("New password"))
-    .min(3, PASSWORD_NOT_LONG_ENOUGH)
-    .max(255, PASSWORD_TOO_LONG),
-});
 
-export const updateNameSchema = yup.object({
-  name: yup.string().required(generateRequiredErrorMessage("Name")),
-});
-
-export const updateAboutSchema = yup.object({
-  value: yup.string().required(generateRequiredErrorMessage("About")),
-});
-
-export const authorIdWithCursorSchema = cursorParamsSchema.shape({
-  authorId: yup.string(),
-});
