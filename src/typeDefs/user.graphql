@@ -1,11 +1,16 @@
 enum UserRole {
   ADMIN
-  AUTHOR
+  SELLER
+  USER
 }
 
 enum AuthorStatus {
   PENDING
   VERIFIED
+}
+
+type LoginResponse {
+  user: User
 }
 
 type User {
@@ -52,6 +57,6 @@ type Mutation {
   register(data: RegisterInput): ID!
   resendActivation(id: ID!): ID!
   verifyUser(id: ID!, code: String!): ID!
-  login(data: LoginInput): String!
+  login(data: LoginInput): LoginResponse!
   logout: ID!
 }

@@ -12,9 +12,7 @@ import {
 
 export const createPostSchema = yup.object({
   title: yup.string().required(generateRequiredErrorMessage("Title")),
-  
   content: yup.string().required(generateRequiredErrorMessage("Content")),
-  
 });
 
 export const updatePostSchema = yup.object({

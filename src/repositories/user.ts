@@ -14,19 +14,13 @@ export function createUser(
       mobile,
       password,
       name,
-      role: "AUTHOR",
+      role: "USER",
       authorStatus: "PENDING",
     },
   });
 }
 
 
-export function updateAuthorStatusToVerified(prisma: PrismaClient, id: string) {
-  return prisma.user.update({
-    data: { authorStatus: "VERIFIED" },
-    where: { id },
-  });
-}
 
 export async function getUserByEmailOrMobile(
   prisma: PrismaClient,

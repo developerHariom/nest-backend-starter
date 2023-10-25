@@ -1,0 +1,47 @@
+enum UserRole {
+  ADMIN
+  SELLER
+  USER
+}
+
+type LoginResponse {
+  seller: Seller
+}
+type Seller {
+  id: ID!
+  firstName: String
+  lastName: String!
+  email: String!
+  contact: String!
+  role: UserRole!
+  password: String
+  country: String
+  address: String
+  shopName: String
+  shopAddress: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+input SellerLoginInput {
+  email: String!
+  password: String!
+}
+
+input SellerRegisterInput {
+  firstName: String
+  lastName: String!
+  email: String!
+  password: String!
+  confirmPassword: String!
+  contact: String!
+  address: String!
+  country:String!
+  shopName: String!
+  shopAddress: String!
+}
+
+type Mutation {
+  sellerRegister(data: SellerRegisterInput): ID!
+  sellerLogin(data: SellerLoginInput):LoginResponse!
+}

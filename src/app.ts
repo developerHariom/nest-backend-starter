@@ -42,7 +42,7 @@ async function shutdown({
 
 async function startServer() {
   const server = createYoga({
-    // cors: { origin: [config.CLIENT_ENDPOINT], credentials: true },
+    cors: { origin: [config.CLIENT_ENDPOINT], credentials: true },
     schema: makeExecutableSchema({
       resolvers,
       typeDefs,

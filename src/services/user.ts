@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient, Seller, User } from "@prisma/client";
 import { hash, verify } from "argon2";
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -15,7 +15,6 @@ import {
   createUser,
   getUserByEmailOrMobile,
   getUserById,
-  updateAuthorStatusToVerified,
 } from "@/repositories/user";
 import { formatError, generateToken, getUserPayload } from "@/utils";
 import config from "@/utils/config";
@@ -26,25 +25,11 @@ import {
   generateCreationErrorMessage,
   generateFetchErrorMessage,
   generateNotExistErrorMessage,
-  generateRefreshTokenKeyName,
-  generateUserVerificationKey,
 } from "@/utils/constants";
-import redisClient from "@/utils/redis";
-import type {
-  IDParams,
-  LoginInput,
-  RegisterInput,
-  UserWithAvatar,
-  VerifyUserParams,
-} from "@/utils/types";
-import { idParamsSchema } from "@/validations";
-import {
-  loginSchema,
-  registerSchema,
-  verifyUserSchema,
-} from "@/validations/user";
+import type { LoginInput, RegisterInput } from "@/utils/types";
+import { loginSchema, registerSchema } from "@/validations/user";
 
-async function generateTokensService(user: UserWithAvatar) {
+export async function generateTokensService(user: User | Seller) {
   const accessToken = await generateToken(
     user,
     config.ACCESS_TOKEN_SECRET_KEY,
@@ -55,7 +40,6 @@ async function generateTokensService(user: UserWithAvatar) {
     user,
     config.REFRESH_TOKEN_SECRET_KEY,
     config.REFRESH_TOKEN_EXPIRES,
-    true,
   );
 
   return { accessToken, refreshToken } as const;
@@ -66,17 +50,9 @@ const verifyRefreshToken = async (token: string) => {
   try {
     const decoded = jwt.verify(token, config.REFRESH_TOKEN_SECRET_KEY);
     const payload = getUserPayload(decoded);
-
-    // const value = await redisClient.get(
-    //   generateRefreshTokenKeyName(payload.id),
-    // );
-
-    // console.log(value)
     if (token) {
       return payload;
     }
-    // redisClient.del(generateRefreshTokenKeyName(payload.id));
-
     throw new AuthenticationError(UN_AUTH_ERR_MSG);
   } catch (error) {
     logger.error(error);
@@ -99,7 +75,7 @@ export async function userRegistrationService(
 
   try {
     const { email, password, mobile, name } = params;
-    console.log(params)
+
     const isUserExist = await getUserByEmailOrMobile(prisma, email, mobile);
 
     if (isUserExist) {
@@ -108,7 +84,7 @@ export async function userRegistrationService(
       //   isUserExist.email,
       //   host,
       // );
-      return isUserExist.id;
+      // return isUserExist.id;
     }
 
     const hashPassword = await hash(password);
@@ -126,85 +102,6 @@ export async function userRegistrationService(
   } catch (error) {
     logger.error(error);
     return new UnknownError(generateCreationErrorMessage("User"));
-  }
-}
-
-export async function resendActivationService(
-  prisma: PrismaClient,
-  params: IDParams,
- 
-) {
-  try {
-    await idParamsSchema.validate(params, {
-      abortEarly: false,
-    });
-  } catch (error) {
-    logger.error(error);
-    return formatError(error, { key: "resend activation" });
-  }
-
-  try {
-    const user = await getUserById(prisma, params.id);
-
-    if (!user) {
-      return new ForbiddenError(generateNotExistErrorMessage("User"));
-    }
-
-    const { authorStatus, id } = user;
-
-    if (authorStatus === "VERIFIED") {
-      return new ForbiddenError("User already verified");
-    }
-
-    return id;
-  } catch (error) {
-    logger.error(error);
-    return new UnknownError("Resend activation failed");
-  }
-}
-
-export async function verifyUserService(
-  prisma: PrismaClient,
-  params: VerifyUserParams,
-) {
-  try {
-    await verifyUserSchema.validate(params, {
-      abortEarly: false,
-    });
-  } catch (error) {
-    logger.error(error);
-    return formatError(error, { key: "verify user" });
-  }
-
-  try {
-    const { id, code } = params;
-    const user = await getUserById(prisma, id);
-
-    if (!user) {
-      return new ForbiddenError(generateNotExistErrorMessage("User"));
-    }
-
-    const { authorStatus } = user;
-
-    if (authorStatus === "VERIFIED") {
-      return new ForbiddenError("User already verified");
-    }
-
-    const VRKey = generateUserVerificationKey(id);
-
-    const redisCode = await redisClient.get(VRKey);
-
-    if (code !== redisCode) {
-      return new ForbiddenError("User verification failed");
-    }
-
-    await redisClient.del(VRKey);
-    await updateAuthorStatusToVerified(prisma, id);
-
-    return id;
-  } catch (error) {
-    logger.error(error);
-    return new UnknownError("User verification failed");
   }
 }
 
@@ -243,13 +140,19 @@ export async function loginService(
 
     const { accessToken, refreshToken } = await generateTokensService(user);
 
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true, // accessible only by web server
-      secure: true, // https
-      sameSite: "none", // cross-site cookie
-      maxAge: ms(config.REFRESH_TOKEN_EXPIRES), // cookie expiry
+    res.cookie("accessToken", accessToken, {
+      maxAge: ms(config.ACCESS_TOKEN_EXPIRES),
     });
-    return accessToken;
+    res.cookie("role", user?.role, {
+      maxAge: ms(config.ACCESS_TOKEN_EXPIRES),
+    });
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: ms(config.REFRESH_TOKEN_EXPIRES),
+    });
+    return { user };
   } catch (error) {
     logger.error(error);
     return new UnknownError(AUTH_FAIL_ERR_MSG);
@@ -262,10 +165,13 @@ export async function logoutService(user: User, req: Request, res: Response) {
     if (!jwt) {
       return new ForbiddenError("Logout failed.");
     }
-
-    await redisClient.del(generateRefreshTokenKeyName(user.id));
-
     res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "none" });
+    res.clearCookie("role", { httpOnly: true, secure: true, sameSite: "none" });
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
     return user.id;
   } catch (error) {
@@ -278,8 +184,6 @@ export async function tokenService(
   refreshToken?: string,
 ) {
   try {
-  
-
     if (!refreshToken) {
       return new AuthenticationError(UN_AUTH_ERR_MSG);
     }

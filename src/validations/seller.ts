@@ -4,27 +4,26 @@ import {
   INVALID_EMAIL,
   PASSWORD_NOT_LONG_ENOUGH,
   PASSWORD_TOO_LONG,
-  VALID_EMAIL_REGEX,
-  VALID_MOBILE_REGEX,
-  generateInvalidErrorMessage,
   generateMatchedErrorMessage,
   generateRequiredErrorMessage,
 } from "@/utils/constants";
 
-
-export const userEmailMobileSchema = yup.object({
+export const sellerRegisterSchema = yup.object({
   email: yup
     .string()
     .required(generateRequiredErrorMessage("Email"))
     .email(INVALID_EMAIL),
-  mobile: yup
+  contact: yup
     .string()
-    .required(generateRequiredErrorMessage("Mobile"))
-  
-});
-
-export const registerSchema = userEmailMobileSchema.shape({
-  name: yup.string(),
+    .required(generateRequiredErrorMessage("Contact Number")),
+  firstName: yup.string().required(generateRequiredErrorMessage("First Name")),
+  lastName: yup.string().required(generateRequiredErrorMessage("Last Name")),
+  country: yup.string().required(generateRequiredErrorMessage("Country")),
+  address: yup.string().required(generateRequiredErrorMessage("Address")),
+  shopName: yup.string().required(generateRequiredErrorMessage("Shop Name")),
+  shopAddress: yup
+    .string()
+    .required(generateRequiredErrorMessage("Shop Address")),
   password: yup
     .string()
     .required(generateRequiredErrorMessage("Password"))
@@ -40,20 +39,10 @@ export const registerSchema = userEmailMobileSchema.shape({
 });
 
 
-export const loginSchema = yup.object({
-  emailOrMobile: yup
+export const sellerLoginSchema = yup.object({
+  email: yup
     .string()
-    .required(generateRequiredErrorMessage("Email/Mobile"))
-    .test(
-      "validMobile",
-      generateInvalidErrorMessage("Email/Mobile"),
-      (value) => {
-        return (
-          !!value &&
-          (VALID_MOBILE_REGEX.test(value) || VALID_EMAIL_REGEX.test(value))
-        );
-      },
-    ),
+    .required(generateRequiredErrorMessage("Email")),
   password: yup.string().required(generateRequiredErrorMessage("password")),
 });
 

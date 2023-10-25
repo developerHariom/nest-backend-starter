@@ -8,9 +8,7 @@ type Post {
 
 input CreatePostInput {
   title: String!
-  
   content: String!
-
 }
 
 input UpdatePostInput {

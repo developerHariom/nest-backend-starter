@@ -20,7 +20,7 @@ export const Mutation = {
     { prisma, user }: YogaContext,
     ___: GraphQLResolveInfo,
   ) {
-    console.log(user,"yo user")
+  
     if (user === null) {
       return new AuthenticationError();
     }

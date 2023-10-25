@@ -7,13 +7,9 @@ const properties = {
   },
   HOST: {
     type: "string",
-    default: "http://localhost",
+    default: "http://localhost:3002",
   },
   DATABASE_URL: {
-    type: "string",
-  },
- 
-  SMTP_USER: {
     type: "string",
   },
   SMTP_PASSWORD: {
@@ -25,8 +21,11 @@ const properties = {
   SMTP_PORT: {
     type: "number",
   },
-  SMTP_SECURITY: {
-    type: "number",
+  SMTP_SERVICE: {
+    type: "string",
+  },
+  SMTP_MAIL: {
+    type: "string",
   },
   ACCESS_TOKEN_SECRET_KEY: {
     type: "string",
@@ -51,11 +50,11 @@ type ENV = {
   DATABASE_URL: string;
   REDIS_HOST: string;
   REDIS_PORT: number;
-  SMTP_USER: string;
   SMTP_PASSWORD: string;
   SMTP_HOST: string;
   SMTP_PORT: number;
-  SMTP_SECURITY: number;
+  SMTP_SERVICE: string;
+  SMTP_MAIL: string;
   ACCESS_TOKEN_SECRET_KEY: string;
   REFRESH_TOKEN_SECRET_KEY: string;
   ACCESS_TOKEN_EXPIRES: string;

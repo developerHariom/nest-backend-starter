@@ -1,0 +1,64 @@
+input ImageInput {
+  public_id: String!
+  imgSrc: String!
+}
+
+type Image {
+  id: ID!
+  public_id: String!
+  imgSrc: String!
+  products: [Product!]!
+}
+
+type Seller {
+  id: ID!
+  firstName: String
+  lastName: String!
+  email: String!
+  contact: String!
+  role: UserRole!
+  password: String
+  country: String
+  address: String
+  shopName: String
+  shopAddress: String
+  createdAt: String!
+  updatedAt: String!
+} 
+
+type Product {
+  id: ID!
+  name: String!
+  description: String!
+  category: String!
+  originalPrice: Int!
+  discountPrice: Int!
+  stock: Int!
+  seller: Seller!
+  images: [Image!]!
+  soldOut: Int
+  createdAt: String!
+  updatedAt: String!
+}
+
+input TagInput {
+  title: String!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  category: String!
+  originalPrice: Int!
+  discountPrice: Int!
+  images: [ImageInput!]!
+  stock :Int!
+}
+
+type Mutation {
+  createProduct(data: CreateProductInput): Product!
+}
+
+type Query {
+  getAllProducts: [Product!]!
+}

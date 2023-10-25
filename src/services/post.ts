@@ -33,6 +33,7 @@ export async function postCreationService(
 
   try {
     const { ...rest } = params;
+    console.log(rest)
 
     return await createPost(prisma, {
       ...rest,

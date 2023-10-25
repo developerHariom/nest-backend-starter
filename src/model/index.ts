@@ -7,8 +7,6 @@ import {
   GRAPHQL_VALIDATION_FAILED,
   INTERNAL_SERVER_ERROR,
   NO_CONTENT,
-  PERSISTED_QUERY_NOT_FOUND,
-  PERSISTED_QUERY_NOT_SUPPORTED,
   RATE_LIMIT_EXCEED,
   UN_AUTH_ERR_MSG,
   UN_AUTH_EXT_ERR_CODE,
@@ -18,8 +16,6 @@ import type { IErrorResponse, ISuccessResponse } from "@/utils/interfaces";
 export class HttpError extends Error {
   constructor(message: string, public code: number, public detail?: string) {
     super(message);
-
-    // this is for instanceof behave properly
     Object.setPrototypeOf(this, HttpError.prototype);
   }
 
@@ -169,29 +165,8 @@ export class NoContentError extends GraphQLError {
   }
 }
 
-// A client sent the hash of a query string to execute via automatic persisted queries, but the query was not in the APQ cache.
-export class PersistedQueryNotFoundError extends GraphQLError {
-  constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    super(message, {
-      extensions: { ...extensions, code: PERSISTED_QUERY_NOT_FOUND },
-    });
 
-    // this is for instanceof behave properly
-    Object.setPrototypeOf(this, GraphQLError.prototype);
-  }
-}
 
-// A client sent the hash of a query string to execute via automatic persisted queries, but the server has disabled APQ.
-export class PersistedQueryNotSupportedError extends GraphQLError {
-  constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    super(message, {
-      extensions: { ...extensions, code: PERSISTED_QUERY_NOT_SUPPORTED },
-    });
-
-    // this is for instanceof behave properly
-    Object.setPrototypeOf(this, GraphQLError.prototype);
-  }
-}
 
 // An unspecified error occurred.
 export class UnknownError extends GraphQLError {
