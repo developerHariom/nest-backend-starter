@@ -192,7 +192,6 @@ export async function tokenService(
 
     const isExist = await getUserById(prisma, user.id);
 
-    console.log(isExist);
 
     if (!isExist) {
       return new AuthenticationError(UN_AUTH_ERR_MSG);

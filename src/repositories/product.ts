@@ -30,9 +30,9 @@ export async function createProduct(
 
   const imagesData = images
     ? images.map((image) => ({
-        public_id: image.public_id,
-        imgSrc: image.imgSrc,
-      }))
+      public_id: image.public_id,
+      imgSrc: image.imgSrc,
+    }))
     : [];
 
   try {
@@ -77,6 +77,6 @@ export function getAllProducts(prisma: PrismaClient) {
     },
   });
 
-  console.log(products,"p")
+
   return products;
 }

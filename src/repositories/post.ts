@@ -56,4 +56,3 @@ export function getAllPosts(
 export function getPostById(prisma: PrismaClient, id: string) {
   return prisma.post.findUnique({ where: { id } });
 }
-

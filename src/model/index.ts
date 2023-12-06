@@ -7,7 +7,7 @@ import {
   GRAPHQL_VALIDATION_FAILED,
   INTERNAL_SERVER_ERROR,
   NO_CONTENT,
-  RATE_LIMIT_EXCEED,
+
   UN_AUTH_ERR_MSG,
   UN_AUTH_EXT_ERR_CODE,
 } from "@/utils/constants";
@@ -173,17 +173,6 @@ export class UnknownError extends GraphQLError {
   constructor(message: string, extensions?: GraphQLErrorExtensions) {
     super(message, {
       extensions: { ...extensions, code: INTERNAL_SERVER_ERROR },
-    });
-
-    // this is for instanceof behave properly
-    Object.setPrototypeOf(this, GraphQLError.prototype);
-  }
-}
-
-export class RateLimitError extends GraphQLError {
-  constructor(message: string, extensions?: GraphQLErrorExtensions) {
-    super(message, {
-      extensions: { ...extensions, code: RATE_LIMIT_EXCEED },
     });
 
     // this is for instanceof behave properly

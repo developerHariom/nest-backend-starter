@@ -33,7 +33,7 @@ export const sellerRegisterSchema = yup.object({
     .string()
     .required(generateRequiredErrorMessage("Confirm password"))
     .oneOf(
-      [yup.ref("password"), null],
+      [yup.ref("password")],
       generateMatchedErrorMessage("Password"),
     ),
 });

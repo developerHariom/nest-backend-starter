@@ -1,23 +1,17 @@
 import { createYoga } from "graphql-yoga";
+
 import { useGraphQlJit } from "@envelop/graphql-jit";
-import { useRateLimiter } from "@envelop/rate-limiter";
 import { useResponseCache } from "@envelop/response-cache";
 import { createRedisCache } from "@envelop/response-cache-redis";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, {
-  NextFunction,
-  Request,
-  Response,
-  static as expressStatic,
-} from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { Server } from "http";
-import path from "path";
 
 import logger from "@/logger";
 import { errorHandler } from "@/middleware";
-import { HttpError, RateLimitError } from "@/model";
+import { HttpError } from "@/model";
 import resolvers from "@/resolvers";
 import typeDefs from "@/typeDefs";
 import { createContext } from "@/utils";
@@ -57,13 +51,13 @@ async function startServer() {
         cache: createRedisCache({ redis: redisClient }),
         ttl: 1000 * 60,
       }),
-      useRateLimiter({
-        identifyFn: (context) => (context as YogaContextType).req.ip,
-        onRateLimitError({ error }) {
-          logger.error(error);
-          throw new RateLimitError(error);
-        },
-      }),
+      // useRateLimiter({
+      //   identifyFn: (context) => (context as YogaContextType).req.ip,
+      //   onRateLimitError({ error }) {
+      //     logger.error(error);
+      //     throw new RateLimitError(error);
+      //   },
+      // }),
     ],
   });
 
@@ -71,8 +65,6 @@ async function startServer() {
 
   app.use(cors({ origin: config.CLIENT_ENDPOINT, credentials: true }));
   app.use(cookieParser());
-  app.use(expressStatic(path.join(process.cwd(), "public")));
-  app.use("/images", expressStatic(path.join(process.cwd(), "images")));
   app.use("/graphql", server.requestListener);
 
   // No Route found

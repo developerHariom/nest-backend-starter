@@ -7,7 +7,7 @@ const properties = {
   },
   HOST: {
     type: "string",
-    default: "http://localhost:3002",
+    default: "http://localhost:3000",
   },
   DATABASE_URL: {
     type: "string",

@@ -7,11 +7,8 @@ export const PASSWORD_NOT_LONG_ENOUGH =
   "Password must be at least 6 characters";
 export const PASSWORD_TOO_LONG =
   "Password must be less than or equal 255 characters";
-
-
 export const UN_AUTH_ERR_MSG = "You are not authorized";
 export const AUTH_FAIL_ERR_MSG = "Authentication failed";
-
 
 
 export function generateNotExistErrorMessage(key: string): string {
@@ -63,8 +60,6 @@ export const VALID_EMAIL_REGEX =
 
 // GraphqlYogaErrorCode
 export const UN_AUTH_EXT_ERR_CODE = "UNAUTHENTICATED";
-
-export const RATE_LIMIT_EXCEED = "RATE_LIMIT_EXCEED";
 export const INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
 export const VERIFIED_SELLER_ERROR_MESSAGE="YOU MUST BE SELLER"
 export const FORBIDDEN = "FORBIDDEN";

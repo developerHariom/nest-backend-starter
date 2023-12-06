@@ -43,13 +43,20 @@ export async function getAllProductsService(prisma: PrismaClient) {
     console.log("ya ta xire");
     const cachedProducts = await redisClient.get("allProducts");
     if (cachedProducts) {
-      console.log("cached diyo");
+
       return JSON.parse(cachedProducts);
     } else {
-      console.log("vtra xirexa");
+
       const products = await getAllProducts(prisma);
-      redisClient.set("allProducts", JSON.stringify(products), "EX", 300);
-      return products;
+      if (products?.length !== 0) {
+        redisClient.set("allProducts", JSON.stringify(products), "EX", 300);
+        return products;
+      }
+      else {
+        let EmptyProduct:any = []
+        return EmptyProduct
+      }
+
     }
   } catch (error) {
     logger.error(error);
